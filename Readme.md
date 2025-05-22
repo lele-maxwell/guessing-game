@@ -1,49 +1,143 @@
 # 🎮 Guessing Game - Java Edition
 
-> "Sharpen your instincts. Trust your gut. Guess the number before you run out of lives!" 🧠🎯
+A fun console-based number guessing game in Java supporting **Single Player** and **Local Multiplayer** modes with different difficulties (Easy / Normal / Hard)!
 
 ---
 
-## 📜 About the Project
+## 🏗️ Project Structure
 
-**Guessing Game** is my **first Java project!** 🚀  
-It's a fun command-line game where the computer picks a secret number, and you try to guess it before you run out of lives.
-
-Along the way, I learned:
-- 🌟 Basic Java syntax
-- 🌟 How to use `Scanner` for user input
-- 🌟 How to work with `Random` numbers
-- 🌟 Using `if-else`, `while` loops, and `switch` cases
-- 🌟 Building a complete interactive program
-
-This project helped me start my Java journey and gave me a solid foundation for bigger projects! 🧱💻
+```plaintext
+.
+├── src/
+│   └── GuessingGame.java
+├── Dockerfile
+├── docker-compose.yml (optional)
+├── .dockerignore
+└── README.md
+```
 
 ---
 
-## 🎮 How to Play
+## 🚀 How to Run the Game
 
-1. Run the program.
-2. Choose a difficulty:
-   - 🔫 **Easy** → Guess a number between 1 and 10
-   - 🔫 **Normal** → Guess a number between 1 and 100
-   - 🔫 **Hard** → Guess a number between 1 and 200
-3. You have **5 lives** ❤️ to guess the correct number.
-4. After each wrong guess:
-   - You'll get a hint if your guess was **too low** or **too high**.
-   - You'll lose one life ❤️.
-5. Guess correctly before running out of lives and **win the game!** 🏆
+### 1. Run Locally (Without Docker)
 
----
-
-## ⚙️ How to Run
-
-First, make sure you have **Java installed** on your computer.
-
-Then, open a terminal in the project folder and run:
+First, ensure you have **Java JDK 17+** installed.
 
 ```bash
-# Compile
-javac GuessingGame.java
+# Step 1: Compile the code
+mkdir -p bin
+javac -d bin -Werror src/GuessingGame.java
 
-# Run
-java GuessingGame
+# Step 2: Run the program
+java -cp bin GuessingGame
+```
+
+---
+
+### 2. Run Using Docker
+
+#### a) Build and Run (Without Compose)
+
+```bash
+# Step 1: Build the Docker image
+docker build -t guessing-game .
+
+# Step 2: Run the container interactively
+docker run -it guessing-game
+```
+
+---
+
+#### b) Run Using Docker Compose
+
+```bash
+# Step 1: Build and run the service
+docker-compose up --build
+```
+
+> ℹ️ You can modify `docker-compose.yml` to customize container names, restart policies, etc.
+
+---
+
+## 📜 Gameplay Overview
+
+1. Choose your **Difficulty**:
+   - Easy (Range 1-10)
+   - Normal (Range 1-100)
+   - Hard (Range 1-200)
+2. Choose **Game Mode**:
+   - Single Player 🎯
+   - Local Multiplayer 🤝
+3. You have **5 ❤️ lives** and a starting **Score of 1000 points**.
+4. Every wrong guess reduces life and score.
+5. Win by guessing correctly before lives/time run out!
+
+Enjoy! 🎉
+
+---
+
+## 🐳 Dockerfile (Multi-Stage Build)
+
+```Dockerfile
+# Stage 1: Build the Java application
+FROM openjdk:17-slim AS build
+
+WORKDIR /app
+
+# Copy source code
+COPY src/ ./src
+
+# Compile
+RUN mkdir -p bin \
+    && javac -d bin -Werror src/*.java
+
+# Stage 2: Runtime
+FROM openjdk:17-slim
+
+WORKDIR /app
+
+# Copy compiled classes from build stage
+COPY --from=build /app/bin ./bin
+
+# Default command
+CMD ["java", "-cp", "bin", "GuessingGame"]
+```
+
+---
+
+## 🐳 docker-compose.yml (Optional)
+
+```yaml
+version: '3.8'
+
+services:
+  guessing-game:
+    build: .
+    container_name: guessing-game
+    stdin_open: true  # For interactive input
+    tty: true         # Allocate pseudo-TTY
+```
+
+---
+
+## 📄 .dockerignore (Recommended)
+
+```bash
+bin/
+*.class
+*.jar
+*.log
+*.tmp
+```
+
+---
+
+## 📬 License
+
+This project is free and open-source under the **MIT License**.
+
+---
+
+Happy Guessing! 🎯🎮
+
